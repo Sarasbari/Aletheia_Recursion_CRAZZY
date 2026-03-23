@@ -115,15 +115,7 @@ Result → Popup UI / Overlay
 
 ## 📁 Project Structure
 
-```bash
-extension/
-│── manifest.json
-│── content.js
-│── background.js
-│── popup.html
-│── popup.js
-│── styles.css
-```
+
 
 ---
 
