@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ALETHEIA — Proof of Origin. On-chain.</title>
+  <meta name="description" content="ALETHEIA anchors image authenticity on-chain. We hash it, sign it, put it on-chain. Nobody can argue with math." />
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="favicon.ico" />
+</head>
+<body>
+
+  <!-- ============ NAVBAR ============ -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="#" class="brand">ALETHEIA<span>.</span></a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#how-it-works">process</a></li>
+        <li><a href="#why-aletheia">features</a></li>
+        <li><a href="#use-cases">use cases</a></li>
+        <li><a href="#pricing">cost</a></li>
+        <li><a href="#" class="nav-cta">Launch App</a></li>
+      </ul>
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">☰</button>
+    </div>
+  </nav>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="hero">
+    <div class="hero-glow green"></div>
+    <div class="hero-glow amber"></div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-text">
+          <div class="badge"><span class="dot"></span> built on polygon</div>
+          <h1>
+            <span class="thin">Every image</span> <span class="heavy">tells a truth.</span>
+            <span class="line2"><span class="highlight">We make it permanent.</span></span>
+          </h1>
+          <p class="hero-description">
+            We hash it. We sign it. We put it on-chain.<br/>
+            Nobody can argue with math.
+          </p>
+          <div class="hero-cta-group">
+            <a href="#" class="btn-primary" id="ctaAnchor">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Anchor an Image
+            </a>
+            <a href="#how-it-works" class="btn-secondary">
+              See How It Works
+            </a>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <span class="value">SHA-512</span>
+              <span class="label">Content Hash</span>
+            </div>
+            <div class="hero-stat">
+              <span class="value">ECDSA</span>
+              <span class="label">Digital Signature</span>
+            </div>
+            <div class="hero-stat">
+              <span class="value">Polygon</span>
+              <span class="label">On-chain Anchor</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- App mockup — dark, no stock photo -->
+        <div class="hero-mockup">
+          <div class="mockup-wrapper">
+            <div class="mockup-bar">
+              <span class="mockup-dot"></span>
+              <span class="mockup-dot"></span>
+              <span class="mockup-dot"></span>
+              <span class="bar-title">aletheia.app</span>
+            </div>
+            <div class="mockup-body">
+              <!-- Left panel: Input -->
+              <div class="mockup-panel">
+                <div class="mockup-panel-title">input source</div>
+                <div class="drop-zone">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  drop image here
+                </div>
+                <div class="meta-fields">
+                  <div class="meta-field"><span class="field-label">loc:</span> 28.6139° N, 77.2090° E</div>
+                  <div class="meta-field"><span class="field-label">author:</span> d.sharma</div>
+                  <div class="meta-field"><span class="field-label">license:</span> CC BY-SA 4.0</div>
+                  <div class="meta-field"><span class="field-label">event:</span> field_survey_03</div>
+                </div>
+              </div>
+              <!-- Right panel: Pipeline -->
+              <div class="mockup-panel">
+                <div class="mockup-panel-title">crypto pipeline</div>
+                <div class="pipeline-steps">
+                  <div class="pipe-step done">
+                    <span class="status-dot"></span>
+                    <span class="step-label">SHA-512</span>
+                    <span class="step-value">3a7f2b9e...c41d</span>
+                  </div>
+                  <div class="pipe-connector"></div>
+                  <div class="pipe-step done">
+                    <span class="status-dot"></span>
+                    <span class="step-label">pHash</span>
+                    <span class="step-value">a8b53831...</span>
+                  </div>
+                  <div class="pipe-connector"></div>
+                  <div class="pipe-step done">
+                    <span class="status-dot"></span>
+                    <span class="step-label">ECDSA</span>
+                    <span class="step-value">0x4e8c93...</span>
+                  </div>
+                  <div class="pipe-connector"></div>
+                  <div class="pipe-step pending">
+                    <span class="status-dot"></span>
+                    <span class="step-label">IPFS</span>
+                    <span class="step-value">pinning...</span>
+                  </div>
+                  <div class="pipe-connector"></div>
+                  <div class="pipe-step waiting">
+                    <span class="status-dot"></span>
+                    <span class="step-label">Anchor</span>
+                    <span class="step-value">waiting</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scrolling Pipeline Visual -->
+      <div class="pipeline-visual">
+        <div class="pipeline-track" id="pipelineTrack"></div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="container">
+      <span class="section-label">how it works ↓</span>
+      <h2 class="section-title reveal">Five Steps to Immutable Proof</h2>
+      <p class="section-subtitle reveal">From raw image to on-chain anchor — every step is cryptographically verifiable.</p>
+
+      <div class="steps-grid">
+        <div class="step-item" data-step="1">
+          <span class="step-number">01</span>
+          <div class="step-icon">
+            <div class="icon-glow"></div>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <h3 class="step-name">Upload</h3>
+          <p class="step-desc">Drag & drop your image with metadata — location, author, license, event context.</p>
+          <div class="step-connector">›</div>
+        </div>
+
+        <div class="step-item" data-step="2">
+          <span class="step-number">02</span>
+          <div class="step-icon">
+            <div class="icon-glow"></div>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+          </div>
+          <h3 class="step-name">Hash</h3>
+          <p class="step-desc">Generate SHA-512 content hash and pHash perceptual fingerprint.</p>
+          <span class="step-hash">sha512: 3a7f2b...</span>
+          <div class="step-connector">›</div>
+        </div>
+
+        <div class="step-item" data-step="3">
+          <span class="step-number">03</span>
+          <div class="step-icon">
+            <div class="icon-glow"></div>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          <h3 class="step-name">Sign</h3>
+          <p class="step-desc">ECDSA digital signature binds your identity to the hash.</p>
+          <span class="step-hash">sig: 0x4e8c...</span>
+          <div class="step-connector">›</div>
+        </div>
+
+        <div class="step-item" data-step="4">
+          <span class="step-number">04</span>
+          <div class="step-icon">
+            <div class="icon-glow"></div>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <h3 class="step-name">Store</h3>
+          <p class="step-desc">Image + metadata pinned to IPFS. Content-addressed, permanent.</p>
+          <span class="step-hash">cid: Qm7xR...</span>
+          <div class="step-connector">›</div>
+        </div>
+
+        <div class="step-item" data-step="5">
+          <span class="step-number">05</span>
+          <div class="step-icon">
+            <div class="icon-glow"></div>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <h3 class="step-name">Anchor</h3>
+          <p class="step-desc">Merkle root batch-anchored to Polygon. On-chain, forever.</p>
+          <span class="step-hash">tx: 0xa3f1...polygon</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+  <!-- ============ WHY ALETHEIA ============ -->
+  <section class="why-aletheia" id="why-aletheia">
+    <div class="container">
+      <span class="section-label">why this exists</span>
+      <h2 class="section-title reveal">Why ALETHEIA</h2>
+      <p class="section-subtitle reveal">Cryptographic guarantees at every layer — from pixel to proof.</p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>Tamper-proof Hashing</h3>
+          <p>Dual-hash approach: SHA-512 for bit-level integrity, pHash for perceptual similarity. Change a single pixel and the math breaks.</p>
+          <div class="card-detail">SHA-512 + pHash → dual verification</div>
+        </div>
+
+        <div class="feature-card">
+          <div class="card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <h3>Decentralized Storage</h3>
+          <p>IPFS means no single server owns your proof. Content-addressed, censorship-resistant, globally accessible. Your data outlives us.</p>
+          <div class="card-detail">IPFS CID → permanent retrieval</div>
+        </div>
+
+        <div class="feature-card">
+          <div class="card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </div>
+          <h3>On-chain Proof</h3>
+          <p>Merkle tree batching on Polygon. Immutable timestamps anyone can verify, forever, for fractions of a cent.</p>
+          <div class="card-detail">Polygon tx → immutable timestamp</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+  <!-- ============ USE CASES ============ -->
+  <section class="use-cases" id="use-cases">
+    <div class="container">
+      <span class="section-label">who needs this</span>
+      <h2 class="section-title reveal">Built for Proof</h2>
+      <p class="section-subtitle reveal">From warzones to courtrooms — wherever image truth matters.</p>
+
+      <div class="cases-grid">
+        <div class="case-card">
+          <div class="case-icon">📸</div>
+          <div>
+            <h3>Photojournalism</h3>
+            <p>Prove when and where a photograph was taken. Anchor raw images at the point of capture — unbroken chain of custody for editorial integrity.</p>
+          </div>
+        </div>
+
+        <div class="case-card">
+          <div class="case-icon">⚖️</div>
+          <div>
+            <h3>Legal Evidence</h3>
+            <p>Cryptographically verifiable visual evidence. Timestamps, authorship, content integrity — independently auditable in any jurisdiction.</p>
+          </div>
+        </div>
+
+        <div class="case-card">
+          <div class="case-icon">🎨</div>
+          <div>
+            <h3>NFT Provenance</h3>
+            <p>Prove your art existed at a specific time, authored by a specific key — before any marketplace gets involved.</p>
+          </div>
+        </div>
+
+        <div class="case-card">
+          <div class="case-icon">🔬</div>
+          <div>
+            <h3>Scientific Research</h3>
+            <p>Anchor microscopy, field photos, experimental data with immutable timestamps. Protect against fabrication claims.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+  <!-- ============ PRICING ============ -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <span class="section-label">what it costs</span>
+      <h2 class="section-title reveal">Gas-Optimized Anchoring</h2>
+      <p class="section-subtitle reveal">Merkle tree batching keeps costs negligible.</p>
+
+      <div class="pricing-card reveal">
+        <div class="pricing-amount">
+          <span class="symbol">~</span>
+          <span class="value">0.0004</span>
+          <span class="unit">MATIC / image</span>
+        </div>
+        <p class="pricing-label">Batch anchoring via Merkle tree keeps costs minimal</p>
+
+        <div class="pricing-features">
+          <div class="pricing-feature">
+            <span class="check">✓</span>
+            SHA-512 + pHash generation
+          </div>
+          <div class="pricing-feature">
+            <span class="check">✓</span>
+            ECDSA signing
+          </div>
+          <div class="pricing-feature">
+            <span class="check">✓</span>
+            IPFS decentralized storage
+          </div>
+          <div class="pricing-feature">
+            <span class="check">✓</span>
+            Polygon on-chain anchor
+          </div>
+          <div class="pricing-feature">
+            <span class="check">✓</span>
+            Merkle proof generation
+          </div>
+          <div class="pricing-feature">
+            <span class="check">✓</span>
+            Verification API access
+          </div>
+        </div>
+
+        <div class="pricing-cta">
+          <a href="#" class="btn-primary">Start Anchoring</a>
+        </div>
+        <p class="pricing-note">Gas costs at current Polygon rates. Actual costs may vary.</p>
+      </div>
+
+      <!-- Personal footnote -->
+      <div class="footnote">
+        <p><span class="fn-marker">*</span> Built because we got tired of fake images winning arguments.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">ALETHEIA<span>.</span></div>
+        <ul class="footer-links">
+          <li><a href="#how-it-works">process</a></li>
+          <li><a href="#why-aletheia">features</a></li>
+          <li><a href="#use-cases">use cases</a></li>
+          <li><a href="#">docs</a></li>
+          <li><a href="#">github</a></li>
+        </ul>
+        <div class="footer-wallet" id="walletAddress" title="Click to copy">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          0x71C7...f3E8a9
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>ALETHEIA — ἀλήθεια — "truth, disclosure" · © 2026</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ SCRIPTS ============ -->
+  <script>
+    // ---- Mobile Nav ----
+    const mobileToggle = document.getElementById('mobileToggle');
+    const navLinks = document.getElementById('navLinks');
+    mobileToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+      mobileToggle.textContent = navLinks.classList.contains('open') ? '✕' : '☰';
+    });
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+        mobileToggle.textContent = '☰';
+      });
+    });
+
+    // ---- Navbar scroll ----
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // ---- Pipeline ticker ----
+    const pipelineNodes = [
+      'IMAGE_INPUT', 'EXIF_PARSE', 'SHA-512', 'pHASH', 'ECDSA_SIGN',
+      'IPFS_PIN', 'MERKLE_LEAF', 'BATCH_ROOT', 'TX_SUBMIT', 'POLYGON_ANCHOR',
+      'VERIFY_OK ✓'
+    ];
+
+    function buildPipeline() {
+      const track = document.getElementById('pipelineTrack');
+      for (let copy = 0; copy < 3; copy++) {
+        pipelineNodes.forEach((label, i) => {
+          const node = document.createElement('div');
+          node.className = 'pipeline-node';
+
+          const span = document.createElement('span');
+          span.className = 'node-label';
+          span.textContent = label;
+          node.appendChild(span);
+
+          if (i < pipelineNodes.length - 1) {
+            const conn = document.createElement('span');
+            conn.className = 'connector';
+            node.appendChild(conn);
+          }
+          track.appendChild(node);
+        });
+        if (copy < 2) {
+          const spacer = document.createElement('div');
+          spacer.className = 'pipeline-node';
+          const conn = document.createElement('span');
+          conn.className = 'connector';
+          spacer.appendChild(conn);
+          track.appendChild(spacer);
+        }
+      }
+    }
+    buildPipeline();
+
+    // ---- Pipeline glow ----
+    (function animatePipelineGlow() {
+      const nodes = document.querySelectorAll('.pipeline-node .node-label');
+      let current = 0;
+      setInterval(() => {
+        nodes.forEach(n => n.classList.remove('active'));
+        if (nodes[current]) nodes[current].classList.add('active');
+        current = (current + 1) % nodes.length;
+      }, 700);
+    })();
+
+    // ---- Scroll Reveal ----
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const delay = el.dataset.step ? (parseInt(el.dataset.step) - 1) * 140 : 0;
+          setTimeout(() => el.classList.add('visible'), delay);
+          revealObs.unobserve(el);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal, .step-item, .feature-card, .case-card').forEach(el => revealObs.observe(el));
+
+    // ---- Feature cards stagger ----
+    const featureCards = document.querySelectorAll('.feature-card');
+    const featureObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          featureCards.forEach((c, i) => setTimeout(() => c.classList.add('visible'), i * 140));
+          featureObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    if (featureCards[0]) featureObs.observe(featureCards[0]);
+
+    // ---- Case cards stagger ----
+    const caseCards = document.querySelectorAll('.case-card');
+    const caseObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          caseCards.forEach((c, i) => setTimeout(() => c.classList.add('visible'), i * 110));
+          caseObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    if (caseCards[0]) caseObs.observe(caseCards[0]);
+
+    // ---- Wallet copy ----
+    document.getElementById('walletAddress').addEventListener('click', function() {
+      navigator.clipboard.writeText('0x71C7656EC7ab88b098defB751B7401B5f6d8976F');
+      this.style.borderColor = 'rgba(74, 222, 128, 0.3)';
+      this.style.color = 'var(--accent)';
+      setTimeout(() => { this.style.borderColor = ''; this.style.color = ''; }, 1500);
+    });
+
+    // ---- Smooth scroll ----
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', function(e) {
+        const id = this.getAttribute('href');
+        if (id === '#') return;
+        e.preventDefault();
+        const t = document.querySelector(id);
+        if (t) window.scrollTo({ top: t.getBoundingClientRect().top + window.pageYOffset - 75, behavior: 'smooth' });
+      });
+    });
+
+    // ---- Typing hash effect ----
+    function typeHash(el, text, speed = 35) {
+      let i = 0; el.textContent = '';
+      (function t() {
+        if (i < text.length) { el.textContent += text[i++]; setTimeout(t, speed + Math.random() * 25); }
+      })();
+    }
+    const hashEls = document.querySelectorAll('.step-hash');
+    const hashObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { typeHash(e.target, e.target.textContent); hashObs.unobserve(e.target); }
+      });
+    }, { threshold: 0.5 });
+    hashEls.forEach(el => hashObs.observe(el));
+
+    // ---- Mockup pipeline sequential animation ----
+    function animateMockupPipeline() {
+      const steps = document.querySelectorAll('.pipe-step');
+      const connectors = document.querySelectorAll('.pipe-connector');
+      let idx = 0;
+
+
+      setInterval(() => {
+        steps.forEach((s, i) => {
+          if (i <= idx) {
+            s.classList.remove('pending', 'waiting');
+            s.classList.add('done');
+          } else if (i === idx + 1) {
+            s.classList.remove('waiting', 'done');
+            s.classList.add('pending');
+          } else {
+            s.classList.remove('done', 'pending');
+            s.classList.add('waiting');
+          }
+        });
+        idx = (idx + 1) % (steps.length + 1);
+      }, 1800);
+    }
+    animateMockupPipeline();
+  </script>
+
+</body>
+</html>
