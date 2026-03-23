@@ -1,0 +1,424 @@
+openapi: 3.0.3
+info:
+  title: Aletheia Media Authenticity API
+  version: 1.0.0
+  description: |
+    Decentralized media authenticity backend API.
+
+    This specification documents the single-service API under cmd/api.
+servers:
+  - url: http://localhost:8080
+    description: Local development
+
+tags:
+  - name: Images
+  - name: Verification
+  - name: Video
+
+paths:
+  /api/v1/images/upload:
+    post:
+      tags: [Images]
+      summary: Upload and anchor image proof
+      description: Uploads an image, computes hashes and merkle root, anchors proof, and stores metadata.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image, devicePublicKey, deviceSignature, captureTimestamp]
+              properties:
+                image:
+                  type: string
+                  format: binary
+                devicePublicKey:
+                  type: string
+                  description: Hex public key
+                deviceSignature:
+                  type: string
+                  description: Hex signature for SHA-256 hash
+                captureTimestamp:
+                  type: string
+                  format: date-time
+                parentHash:
+                  type: string
+                location:
+                  type: string
+                deviceInfo:
+                  type: string
+                uploaderId:
+                  type: string
+      responses:
+        '200':
+          description: Uploaded or duplicate proof response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '502':
+          $ref: '#/components/responses/UpstreamError'
+
+  /api/v1/verify:
+    post:
+      tags: [Verification]
+      summary: Verify uploaded image bytes
+      description: Verifies image authenticity against stored proofs.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                image:
+                  type: string
+                  format: binary
+                captureTimestamp:
+                  type: string
+                  format: date-time
+                location:
+                  type: string
+                deviceInfo:
+                  type: string
+                devicePublicKey:
+                  type: string
+                deviceSignature:
+                  type: string
+      responses:
+        '200':
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/verify/url:
+    post:
+      tags: [Verification]
+      summary: Verify image from URL
+      description: Fetches image bytes from URL and runs authenticity verification.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyURLRequest'
+      responses:
+        '200':
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/video/upload:
+    post:
+      tags: [Video]
+      summary: Upload and anchor video proof
+      description: Uploads video, extracts audio via FFmpeg, hashes both streams, and anchors proof.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [video]
+              properties:
+                video:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Video upload result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoUploadResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/v1/video/verify:
+    post:
+      tags: [Video]
+      summary: Verify uploaded video
+      description: Verifies video/audio integrity against stored proof records.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [video]
+              properties:
+                video:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Video verification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoVerifyResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+components:
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UpstreamError:
+      description: Upstream service error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+
+    FraudFlags:
+      type: object
+      properties:
+        duplicate:
+          type: boolean
+        spam:
+          type: boolean
+        replay:
+          type: boolean
+        suspicious:
+          type: boolean
+
+    VerifyBreakdown:
+      type: object
+      properties:
+        hashMatch:
+          type: boolean
+        signatureValid:
+          type: boolean
+        similarity:
+          type: number
+          format: double
+        metadataValid:
+          type: boolean
+        replaySafe:
+          type: boolean
+        hash:
+          type: string
+          enum: [MATCH, MISMATCH]
+        signature:
+          type: string
+          enum: [VALID, INVALID]
+
+    DeviceVerification:
+      type: object
+      properties:
+        verified:
+          type: boolean
+        publicKey:
+          type: string
+
+    TamperedRegion:
+      type: object
+      properties:
+        x:
+          type: integer
+        y:
+          type: integer
+
+    ProofReportBreakdown:
+      type: object
+      properties:
+        hash:
+          type: string
+          enum: [MATCH, MISMATCH]
+        similarity:
+          type: number
+          format: double
+        signature:
+          type: string
+          enum: [VALID, INVALID]
+
+    ProofReport:
+      type: object
+      properties:
+        proofId:
+          type: string
+        sha256:
+          type: string
+        CID:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        blockNumber:
+          type: integer
+          format: uint64
+        verdict:
+          type: string
+          enum: [AUTHENTIC, TAMPERED, SIMILAR, UNKNOWN]
+        trustScore:
+          type: integer
+        breakdown:
+          $ref: '#/components/schemas/ProofReportBreakdown'
+        flags:
+          $ref: '#/components/schemas/FraudFlags'
+
+    UploadResponse:
+      type: object
+      properties:
+        proofId:
+          type: string
+        sha256:
+          type: string
+        phash:
+          type: string
+        merkleRoot:
+          type: string
+        signature:
+          type: string
+        publicKey:
+          type: string
+        captureTimestamp:
+          type: string
+          format: date-time
+        ipfsCID:
+          type: string
+        txHash:
+          type: string
+        blockNumber:
+          type: integer
+          format: uint64
+        status:
+          type: string
+          description: ANCHORED or DUPLICATE
+        flags:
+          $ref: '#/components/schemas/FraudFlags'
+        warnings:
+          type: array
+          items:
+            type: string
+
+    VerifyURLRequest:
+      type: object
+      required: [imageUrl]
+      properties:
+        imageUrl:
+          type: string
+          format: uri
+        captureTimestamp:
+          type: string
+          format: date-time
+        location:
+          type: string
+        deviceInfo:
+          type: string
+        devicePublicKey:
+          type: string
+        deviceSignature:
+          type: string
+
+    VerifyResponse:
+      type: object
+      properties:
+        verdict:
+          type: string
+          enum: [AUTHENTIC, TAMPERED, SIMILAR, UNKNOWN]
+        trustScore:
+          type: integer
+        timestampValid:
+          type: boolean
+        sourceType:
+          type: string
+          enum: [UPLOAD, URL]
+        proofReport:
+          $ref: '#/components/schemas/ProofReport'
+        warnings:
+          type: array
+          items:
+            type: string
+        suspicious:
+          type: boolean
+        matchedProofId:
+          type: string
+        similarityScore:
+          type: integer
+        breakdown:
+          $ref: '#/components/schemas/VerifyBreakdown'
+        device:
+          $ref: '#/components/schemas/DeviceVerification'
+        tamperedRegions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TamperedRegion'
+        replaySuspicious:
+          type: boolean
+
+    VideoUploadResponse:
+      type: object
+      properties:
+        proofId:
+          type: string
+        videoHash:
+          type: string
+        audioHash:
+          type: string
+        cidVideo:
+          type: string
+        cidAudio:
+          type: string
+        txHash:
+          type: string
+        status:
+          type: string
+
+    VideoVerifyDetails:
+      type: object
+      properties:
+        video:
+          type: string
+          enum: [MATCH, MISMATCH]
+        audio:
+          type: string
+          enum: [MATCH, MISMATCH]
+
+    VideoVerifyResponse:
+      type: object
+      properties:
+        videoHash:
+          type: string
+        audioHash:
+          type: string
+        verdict:
+          type: string
+          enum: [AUTHENTIC, AUDIO_TAMPERED, VIDEO_TAMPERED, TAMPERED]
+        details:
+          $ref: '#/components/schemas/VideoVerifyDetails'

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package aletheia.trust.v1;
+
+service TrustEngine {
+  rpc ComputeScore (ComputeScoreRequest) returns (ComputeScoreResponse);
+}
+
+message ComputeScoreRequest {
+  bool sha_match = 1;
+  bool phash_similarity = 2;
+  bool metadata = 3;
+  bool witness = 4;
+}
+
+message ComputeScoreResponse {
+  int32 score = 1;
+}

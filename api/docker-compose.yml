@@ -1,0 +1,77 @@
+version: "3.9"
+
+services:
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  cassandra:
+    image: cassandra:4.1
+    ports:
+      - "9042:9042"
+
+  ipfs:
+    image: ipfs/kubo:latest
+    ports:
+      - "4001:4001"
+      - "5001:5001"
+      - "8080:8080"
+
+  task-api:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./workers/celery-worker:/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_BACKEND_URL=redis://redis:6379/2
+      - IPFS_ENDPOINT=ipfs:5001
+      - BIGCHAINDB_URL=
+      - BIGCHAINDB_API_KEY=
+      - POLYGON_RPC_URL=
+      - POLYGON_PRIVATE_KEY=
+      - POLYGON_CONTRACT_ADDRESS=
+      - POLYGON_CHAIN_ID=137
+    command: sh -c "pip install -r requirements.txt && uvicorn task_api:app --host 0.0.0.0 --port 8090"
+    depends_on:
+      - redis
+    ports:
+      - "8090:8090"
+
+  celery-worker:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./workers/celery-worker:/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_BACKEND_URL=redis://redis:6379/2
+      - IPFS_ENDPOINT=ipfs:5001
+      - BIGCHAINDB_URL=
+      - BIGCHAINDB_API_KEY=
+      - POLYGON_RPC_URL=
+      - POLYGON_PRIVATE_KEY=
+      - POLYGON_CONTRACT_ADDRESS=
+      - POLYGON_CHAIN_ID=137
+    command: sh -c "pip install -r requirements.txt && celery -A celery_app.celery_app worker --loglevel=info"
+    depends_on:
+      - redis
+
+  flower:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./workers/celery-worker:/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_BACKEND_URL=redis://redis:6379/2
+    command: sh -c "pip install -r requirements.txt && celery -A celery_app.celery_app flower --port=5555"
+    depends_on:
+      - redis
+      - celery-worker
+    ports:
+      - "5555:5555"
+
+  # Run Go services from host during development.
