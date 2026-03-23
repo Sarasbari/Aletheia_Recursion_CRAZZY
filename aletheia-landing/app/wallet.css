@@ -1,0 +1,137 @@
+/* ============================================================
+   Wallet Styles
+   ============================================================ */
+
+/* Navbar wallet button */
+.wallet-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+.wallet-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-glow);
+}
+.wallet-btn.connected {
+  border-color: rgba(74, 222, 128, 0.25);
+  color: var(--accent);
+}
+.wallet-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  animation: pulse-dot 2.5s ease-in-out infinite;
+}
+.wallet-dot.disconnected {
+  background: var(--text-muted);
+  animation: none;
+}
+
+/* Wallet status bar on anchor page */
+.wallet-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+.wallet-status-bar .mono {
+  color: var(--accent);
+  word-break: break-all;
+  font-size: 0.68rem;
+}
+
+/* Tx link */
+.tx-link {
+  color: var(--accent) !important;
+  text-decoration: none;
+  transition: opacity var(--transition);
+}
+.tx-link:hover {
+  opacity: 0.7;
+}
+
+/* ============================================================
+   Camera Capture
+   ============================================================ */
+.camera-panel {
+  min-height: 220px;
+}
+
+.camera-feed {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #000;
+  display: block;
+}
+
+.camera-controls {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+}
+
+.camera-capture-btn {
+  flex: 1;
+}
+
+.capture-circle {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  position: relative;
+}
+.capture-circle::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.camera-start {
+  min-height: 220px;
+  border: 1.5px dashed var(--text-muted);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all var(--transition);
+  background: rgba(255,255,255,0.01);
+}
+.camera-start svg { opacity: 0.3; }
+.camera-start:hover {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+.camera-start:hover svg { opacity: 0.6; }
