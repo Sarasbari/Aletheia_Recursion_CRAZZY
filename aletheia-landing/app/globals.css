@@ -35,6 +35,24 @@
   --max-width: 1140px;
 }
 
+/* ---------- Light Theme ---------- */
+[data-theme="light"] {
+  --bg: #f0f2f5;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f7f7f9;
+  --bg-elevated: #e8eaed;
+  --text: #1a1a2e;
+  --text-secondary: #4a4a5a;
+  --text-muted: #8a8a9a;
+  --accent: #16a34a;
+  --accent-dim: rgba(22, 163, 74, 0.1);
+  --accent-glow: rgba(22, 163, 74, 0.06);
+  --amber: #d97706;
+  --amber-dim: rgba(217, 119, 6, 0.1);
+  --border: #d4d6db;
+  --border-faint: #e5e7eb;
+}
+
 html {
   scroll-behavior: smooth;
   font-size: 16px;
@@ -1152,3 +1170,105 @@ section {
   .pricing-card { padding: 1.8rem 1.3rem; }
   .pricing-amount .value { font-size: 1.8rem; }
 }
+
+/* ---------- Light Theme Overrides ---------- */
+/* These override hardcoded rgba values that don't use CSS vars */
+
+body {
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+[data-theme="light"] body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+[data-theme="light"] body::before {
+  opacity: 0;
+}
+
+[data-theme="light"] .navbar {
+  background: rgba(240, 242, 245, 0.85);
+}
+
+[data-theme="light"] .navbar.scrolled {
+  background: rgba(240, 242, 245, 0.96);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .hero::before {
+  background: radial-gradient(ellipse at 30% 40%, rgba(22, 163, 74, 0.06) 0%, transparent 60%);
+}
+
+[data-theme="light"] .hero-glow.green {
+  opacity: 0.08;
+}
+
+[data-theme="light"] .hero-glow.amber {
+  opacity: 0.05;
+}
+
+[data-theme="light"] .mockup-wrapper {
+  box-shadow: 8px 12px 40px rgba(0, 0, 0, 0.1), -2px -2px 0 rgba(22, 163, 74, 0.04);
+}
+
+[data-theme="light"] .pipe-step {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="light"] .meta-field {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="light"] .pipeline-node .node-label {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="light"] .pipeline-visual::before {
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+}
+
+[data-theme="light"] .drop-zone {
+  border-color: var(--text-muted);
+}
+
+[data-theme="light"] .case-icon {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .footer-wallet {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="light"] .step-hash {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .btn-primary {
+  color: #fff;
+}
+
+[data-theme="light"] .btn-primary:hover {
+  color: #fff;
+}
+
+[data-theme="light"] .btn-secondary {
+  background: transparent;
+}
+
+[data-theme="light"] .btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] a:hover {
+  color: #15803d;
+}
+
+[data-theme="light"] .nav-links.open {
+  background: rgba(240, 242, 245, 0.97);
+}
+
+[data-theme="light"] .feature-card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+

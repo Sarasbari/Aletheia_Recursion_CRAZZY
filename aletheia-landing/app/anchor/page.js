@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
-import { uploadImage } from "../lib/api";
+import { uploadImage, uploadVideo } from "../lib/api";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { useSendTransaction } from "wagmi";
 import { parseEther, stringToHex } from "viem";
@@ -22,6 +22,7 @@ const ANCHOR_ADDRESS = "0x000000000000000000000000000000000000dEaD";
 export default function AnchorPage() {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [mediaType, setMediaType] = useState("image");
   const [metadata, setMetadata] = useState({
     location: "",
     deviceInfo: "",
@@ -60,9 +61,11 @@ export default function AnchorPage() {
       e.preventDefault();
       e.currentTarget.classList.remove("drag-over");
       const f = e.dataTransfer?.files?.[0];
-      if (f && f.type.startsWith("image/")) handleFile(f);
+      if (!f) return;
+      if (mediaType === "video" && f.type.startsWith("video/")) handleFile(f);
+      else if (mediaType === "image" && f.type.startsWith("image/")) handleFile(f);
     },
-    [handleFile]
+    [handleFile, mediaType]
   );
 
   const handleDragOver = (e) => {
@@ -137,15 +140,20 @@ export default function AnchorPage() {
     }
 
     try {
-      const data = await uploadImage({
-        imageFile: file,
-        devicePublicKey: "",
-        deviceSignature: "",
-        captureTimestamp: new Date().toISOString(),
-        location: metadata.location || undefined,
-        deviceInfo: metadata.deviceInfo || undefined,
-        uploaderId: metadata.uploaderId || undefined,
-      });
+      let data;
+      if (mediaType === "video") {
+        data = await uploadVideo({ videoFile: file });
+      } else {
+        data = await uploadImage({
+          imageFile: file,
+          devicePublicKey: "",
+          deviceSignature: "",
+          captureTimestamp: new Date().toISOString(),
+          location: metadata.location || undefined,
+          deviceInfo: metadata.deviceInfo || undefined,
+          uploaderId: metadata.uploaderId || undefined,
+        });
+      }
       setResult(data);
       setCurrentStep(PIPELINE_STEPS.length - 1);
       setStatus("anchoring");
@@ -182,7 +190,7 @@ export default function AnchorPage() {
                 anchor
               </div>
               <h1>Upload & Anchor</h1>
-              <p>Upload or capture an image. We hash, sign, and anchor it on Polygon Amoy.</p>
+              <p>Upload or capture an image or video. We hash, sign, and anchor it on Polygon Amoy.</p>
             </div>
 
             {/* Wallet chip */}
@@ -195,16 +203,30 @@ export default function AnchorPage() {
               )}
             </div>
 
+            {/* Media type toggle */}
+            <div className="media-type-toggle">
+              <button className={mediaType === "image" ? "active" : ""} onClick={() => { setMediaType("image"); setFile(null); setPreview(null); setResult(null); setError(null); }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                Image
+              </button>
+              <button className={mediaType === "video" ? "active" : ""} onClick={() => { setMediaType("video"); setInputMode("file"); setFile(null); setPreview(null); setResult(null); setError(null); stopCamera(); }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                Video
+              </button>
+            </div>
+
             {/* Input switcher */}
             <div className="input-tabs">
               <button className={inputMode === "file" ? "active" : ""} onClick={() => { setInputMode("file"); stopCamera(); }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 Upload
               </button>
-              <button className={inputMode === "camera" ? "active" : ""} onClick={() => setInputMode("camera")}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                Camera
-              </button>
+              {mediaType === "image" && (
+                <button className={inputMode === "camera" ? "active" : ""} onClick={() => setInputMode("camera")}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  Camera
+                </button>
+              )}
             </div>
 
             {/* Drop zone */}
@@ -216,18 +238,24 @@ export default function AnchorPage() {
                 onDragLeave={handleDragLeave}
                 onClick={() => inputRef.current?.click()}
               >
-                {preview ? (
+                {preview && mediaType === "image" ? (
                   <img src={preview} alt="Preview" className="drop-preview" />
+                ) : preview && mediaType === "video" ? (
+                  <video src={preview} className="drop-preview video-preview" controls muted />
                 ) : (
                   <div className="drop-placeholder">
                     <div className="drop-icon">
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      {mediaType === "video" ? (
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                      ) : (
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      )}
                     </div>
-                    <p className="drop-text">Drag & drop image here</p>
-                    <p className="drop-subtext">or click to browse • PNG, JPG, WEBP</p>
+                    <p className="drop-text">{mediaType === "video" ? "Drag & drop video here" : "Drag & drop image here"}</p>
+                    <p className="drop-subtext">{mediaType === "video" ? "or click to browse • MP4, MOV, WEBM" : "or click to browse • PNG, JPG, WEBP"}</p>
                   </div>
                 )}
-                <input ref={inputRef} type="file" accept="image/*" hidden onChange={(e) => handleFile(e.target.files?.[0])} />
+                <input ref={inputRef} type="file" accept={mediaType === "video" ? "video/*" : "image/*"} hidden onChange={(e) => handleFile(e.target.files?.[0])} />
               </div>
             )}
 
@@ -289,7 +317,7 @@ export default function AnchorPage() {
             </div>
 
             <button className="submit-btn" onClick={handleSubmit} disabled={!file || !isConnected || status === "uploading" || status === "anchoring"}>
-              {!isConnected ? "Connect Wallet First" : !file ? "Select an Image" : "Anchor on Polygon (~0.0001 POL)"}
+              {!isConnected ? "Connect Wallet First" : !file ? (mediaType === "video" ? "Select a Video" : "Select an Image") : "Anchor on Polygon (~0.0001 POL)"}
             </button>
           </section>
 
@@ -362,7 +390,7 @@ export default function AnchorPage() {
             {!result && !error && (
               <div className="empty-state">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-                <p>Upload an image to see the pipeline in action</p>
+                <p>Upload an image or video to see the pipeline in action</p>
                 <span className="empty-hint">Gas fee: ~0.0001 POL (Amoy testnet)</span>
               </div>
             )}
@@ -376,6 +404,7 @@ export default function AnchorPage() {
         currentStep={currentStep}
         status={status}
         onClose={() => setShowModal(false)}
+        mediaType={mediaType}
       />
     </>
   );

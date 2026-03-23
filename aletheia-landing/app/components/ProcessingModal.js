@@ -13,7 +13,7 @@ const FACTS = [
   "Blockchain timestamps are cryptographically immutable",
 ];
 
-export default function ProcessingModal({ isOpen, steps, currentStep, status, onClose }) {
+export default function ProcessingModal({ isOpen, steps, currentStep, status, onClose, mediaType = "image", mode = "anchor" }) {
   const [fact, setFact] = useState(0);
   const [dots, setDots] = useState("");
 
@@ -56,16 +56,20 @@ export default function ProcessingModal({ isOpen, steps, currentStep, status, on
           </div>
           <h3 className="modal-title">
             {status === "done"
-              ? "Anchored Successfully"
+              ? mode === "verify" ? "Verification Complete" : "Anchored Successfully"
               : status === "error"
               ? "Something Went Wrong"
               : "Processing" + dots}
           </h3>
           <p className="modal-subtitle">
             {status === "done"
-              ? "Your proof is now on-chain and permanent."
+              ? mode === "verify" ? "Check the verdict below." : "Your proof is now on-chain and permanent."
               : status === "error"
               ? "Check the details below."
+              : mode === "verify"
+              ? `Verifying your ${mediaType} against anchored proofs`
+              : mediaType === "video"
+              ? "Anchoring your video to the blockchain"
               : "Anchoring your image to the blockchain"}
           </p>
         </div>

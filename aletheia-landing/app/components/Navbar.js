@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import WalletButton from "./WalletButton";
+import SkyToggle from "./SkyToggle";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -75,6 +76,9 @@ export default function Navbar() {
             <a href="/#pricing" onClick={(e) => handleAnchorClick(e, "#pricing")}>
               cost
             </a>
+          </li>
+          <li>
+            <SkyToggle />
           </li>
           <li>
             <WalletButton />

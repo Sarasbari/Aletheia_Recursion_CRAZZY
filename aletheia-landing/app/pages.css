@@ -236,6 +236,59 @@
 }
 .input-tabs button.active svg { color: var(--accent); }
 
+/* ── Media type toggle ─────────────────────────────────── */
+.media-type-toggle {
+  display: flex;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 3px;
+  margin-bottom: 0.6rem;
+}
+.media-type-toggle button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.02em;
+}
+.media-type-toggle button:hover {
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.02);
+}
+.media-type-toggle button.active {
+  background: rgba(74, 222, 128, 0.06);
+  color: var(--accent);
+  border: 1px solid rgba(74, 222, 128, 0.1);
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.05);
+}
+.media-type-toggle button.active svg {
+  color: var(--accent);
+}
+
+/* ── Video preview in drop zone ────────────────────────── */
+.video-preview {
+  width: 100%;
+  min-height: 220px;
+  max-height: 300px;
+  border-radius: 13px;
+  background: #000;
+  display: block;
+  object-fit: contain;
+}
+
 /* ── Drop zone ──────────────────────────────────────────── */
 .drop-area {
   border: 1.5px dashed rgba(255, 255, 255, 0.06);

@@ -1,13 +1,22 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
-import { verifyImage, verifyImageUrl } from "../lib/api";
+import { verifyImage, verifyImageUrl, verifyVideo } from "../lib/api";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { useSendTransaction } from "wagmi";
 import { parseEther, stringToHex } from "viem";
 import Navbar from "../components/Navbar";
+import ProcessingModal from "../components/ProcessingModal";
 
 const VERIFY_ADDRESS = "0x000000000000000000000000000000000000dEaD";
+
+const VERIFY_STEPS = [
+  { key: "pay", label: "Gas fee transaction" },
+  { key: "upload", label: "Upload to server" },
+  { key: "hash", label: "Compute hash" },
+  { key: "match", label: "Match against proofs" },
+  { key: "result", label: "Return verdict" },
+];
 
 const VERDICT_MAP = {
   AUTHENTIC: { label: "Authentic", icon: "✓", className: "authentic" },
@@ -18,6 +27,7 @@ const VERDICT_MAP = {
 
 export default function VerifyPage() {
   const [mode, setMode] = useState("file");
+  const [mediaType, setMediaType] = useState("image");
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [status, setStatus] = useState("idle");
@@ -25,6 +35,8 @@ export default function VerifyPage() {
   const [error, setError] = useState(null);
   const [txHash, setTxHash] = useState(null);
   const [cameraActive, setCameraActive] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [currentStep, setCurrentStep] = useState(-1);
   const inputRef = useRef(null);
   const videoRef = useRef(null);
   const streamRef = useRef(null);
@@ -48,9 +60,11 @@ export default function VerifyPage() {
       e.preventDefault();
       e.currentTarget.classList.remove("drag-over");
       const f = e.dataTransfer?.files?.[0];
-      if (f && f.type.startsWith("image/")) handleFile(f);
+      if (!f) return;
+      if (mediaType === "video" && f.type.startsWith("video/")) handleFile(f);
+      else if (mediaType === "image" && f.type.startsWith("image/")) handleFile(f);
     },
-    [handleFile]
+    [handleFile, mediaType]
   );
 
   const startCamera = useCallback(async () => {
@@ -105,10 +119,17 @@ export default function VerifyPage() {
       setError("Please connect your wallet first.");
       return;
     }
+    if (!file) {
+      setError(mediaType === "video" ? "Please select a video file first." : "Please select an image first.");
+      return;
+    }
+    setShowModal(true);
     setStatus("verifying");
     setError(null);
     setResult(null);
     setTxHash(null);
+    setCurrentStep(0);
+
     try {
       // Step 1: Send gas fee tx
       const proofData = stringToHex(
@@ -121,14 +142,39 @@ export default function VerifyPage() {
         gasPrice: 30n * 10n ** 9n, // 30 Gwei
       });
       setTxHash(hash);
+      setCurrentStep(1);
 
-      // Step 2: Call backend verification
-      if (!file) throw new Error("Please provide an image.");
-      const data = await verifyImage({ imageFile: file });
+      // Step 2: Upload and verify
+      await new Promise((r) => setTimeout(r, 400));
+      setCurrentStep(2);
+      await new Promise((r) => setTimeout(r, 400));
+      setCurrentStep(3);
+
+      let data;
+      if (mediaType === "video") {
+        data = await verifyVideo({ videoFile: file });
+      } else {
+        data = await verifyImage({ imageFile: file });
+      }
+
+      setCurrentStep(4);
       setResult(data);
       setStatus("done");
     } catch (err) {
-      setError(err.message);
+      // Better error messages for common cases
+      let errorMsg = err.message || "Verification failed";
+      if (errorMsg.includes("500") || errorMsg.toLowerCase().includes("internal server")) {
+        errorMsg = mediaType === "video"
+          ? "This video was not found in the database. It may not have been anchored yet."
+          : "This image was not found in the database. It may not have been anchored yet.";
+      } else if (errorMsg.includes("404")) {
+        errorMsg = mediaType === "video"
+          ? "Video verification endpoint not available. Please check if the backend server is running."
+          : "Image verification endpoint not available. Please check if the backend server is running.";
+      } else if (errorMsg.includes("Failed to fetch") || errorMsg.includes("NetworkError")) {
+        errorMsg = "Cannot reach the server. Please check your network connection and ensure the backend is running.";
+      }
+      setError(errorMsg);
       setStatus("error");
     }
   };
@@ -147,8 +193,8 @@ export default function VerifyPage() {
                 <span className="badge-dot verify-dot" />
                 verify
               </div>
-              <h1>Verify Image</h1>
-              <p>Check if an image has been anchored on-chain. Upload or capture a photo.</p>
+              <h1>Verify Authenticity</h1>
+              <p>Check if an image or video has been anchored on-chain. Upload a file or capture a photo.</p>
             </div>
 
             {/* Wallet chip */}
@@ -161,15 +207,29 @@ export default function VerifyPage() {
               )}
             </div>
 
+            {/* Media type toggle */}
+            <div className="media-type-toggle">
+              <button className={mediaType === "image" ? "active" : ""} onClick={() => { setMediaType("image"); setFile(null); setPreview(null); setResult(null); setError(null); }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                Image
+              </button>
+              <button className={mediaType === "video" ? "active" : ""} onClick={() => { setMediaType("video"); setMode("file"); setFile(null); setPreview(null); setResult(null); setError(null); stopCamera(); }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                Video
+              </button>
+            </div>
+
             <div className="input-tabs">
               <button className={mode === "file" ? "active" : ""} onClick={() => { setMode("file"); setResult(null); setError(null); stopCamera(); }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 Upload
               </button>
-              <button className={mode === "camera" ? "active" : ""} onClick={() => { setMode("camera"); setResult(null); setError(null); }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                Camera
-              </button>
+              {mediaType === "image" && (
+                <button className={mode === "camera" ? "active" : ""} onClick={() => { setMode("camera"); setResult(null); setError(null); }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  Camera
+                </button>
+              )}
             </div>
 
             {mode === "file" && (
@@ -180,18 +240,24 @@ export default function VerifyPage() {
                 onDragLeave={(e) => e.currentTarget.classList.remove("drag-over")}
                 onClick={() => inputRef.current?.click()}
               >
-                {preview ? (
+                {preview && mediaType === "image" ? (
                   <img src={preview} alt="Preview" className="drop-preview" />
+                ) : preview && mediaType === "video" ? (
+                  <video src={preview} className="drop-preview video-preview" controls muted />
                 ) : (
                   <div className="drop-placeholder">
                     <div className="drop-icon">
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      {mediaType === "video" ? (
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                      ) : (
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      )}
                     </div>
-                    <p className="drop-text">Drag & drop image</p>
-                    <p className="drop-subtext">or click to browse</p>
+                    <p className="drop-text">{mediaType === "video" ? "Drag & drop video" : "Drag & drop image"}</p>
+                    <p className="drop-subtext">{mediaType === "video" ? "or click to browse • MP4, MOV, WEBM" : "or click to browse"}</p>
                   </div>
                 )}
-                <input ref={inputRef} type="file" accept="image/*" hidden onChange={(e) => handleFile(e.target.files?.[0])} />
+                <input ref={inputRef} type="file" accept={mediaType === "video" ? "video/*" : "image/*"} hidden onChange={(e) => handleFile(e.target.files?.[0])} />
               </div>
             )}
 
@@ -234,7 +300,7 @@ export default function VerifyPage() {
               ) : !isConnected ? (
                 "Connect Wallet First"
               ) : (
-                "Verify Image (~0.0001 POL)"
+                mediaType === "video" ? "Verify Video (~0.0001 POL)" : "Verify Image (~0.0001 POL)"
               )}
             </button>
           </section>
@@ -319,13 +385,23 @@ export default function VerifyPage() {
             {!result && !error && (
               <div className="empty-state">
                 <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-                <p>Upload an image or paste a URL to verify its on-chain status</p>
+                <p>Upload an image or video to verify its on-chain status</p>
                 <span className="empty-hint">We compare against all anchored proofs</span>
               </div>
             )}
           </section>
         </div>
       </main>
+
+      <ProcessingModal
+        isOpen={showModal && (status === "verifying" || status === "done" || status === "error")}
+        steps={VERIFY_STEPS}
+        currentStep={currentStep}
+        status={status === "verifying" ? "uploading" : status}
+        onClose={() => setShowModal(false)}
+        mediaType={mediaType}
+        mode="verify"
+      />
     </>
   );
 }

@@ -2,6 +2,7 @@ import { Inter, Space_Grotesk, JetBrains_Mono, Caveat } from "next/font/google";
 import "./globals.css";
 import "./pages.css";
 import "./wallet.css";
+import "./sky-toggle.css";
 import Web3Provider from "./components/Web3Provider";
 
 const inter = Inter({
@@ -34,15 +35,29 @@ export const metadata = {
     "ALETHEIA anchors image authenticity on-chain. We hash it, sign it, put it on-chain. Nobody can argue with math.",
 };
 
+const themeInitScript = `
+  (function() {
+    try {
+      var theme = localStorage.getItem('aletheia-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch(e) {}
+  })();
+`;
+
 export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} ${caveat.variable}`}
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body>
         <Web3Provider>{children}</Web3Provider>
       </body>
     </html>
   );
 }
+
