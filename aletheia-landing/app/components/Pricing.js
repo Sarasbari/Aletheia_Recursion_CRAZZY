@@ -46,7 +46,7 @@ export default function Pricing() {
         <div className="pricing-card reveal">
           <div className="pricing-amount">
             <span className="symbol">~</span>
-            <span className="value">0.0004</span>
+            <span className="value">0.0001</span>
             <span className="unit">MATIC / image</span>
           </div>
           <p className="pricing-label">
