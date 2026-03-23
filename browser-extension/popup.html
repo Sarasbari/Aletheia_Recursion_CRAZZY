@@ -3,16 +3,49 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aletheia Extension</title>
-    <link rel="stylesheet" href="popup.css" />
+    <title>Aletheia</title>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="popup">
-      <h1>Aletheia</h1>
-      <p>Basic extension setup is ready.</p>
-      <button id="highlightBtn" type="button">Highlight This Page</button>
-      <p id="status" aria-live="polite"></p>
+    <main class="popup-root">
+      <header class="popup-header">
+        <h1>Aletheia</h1>
+        <p>Image authenticity assistant</p>
+      </header>
+
+      <section id="emptyState" class="panel panel-empty">
+        <p>No analysis yet.</p>
+        <p class="muted">Hover any image on a webpage and click the 🔍 icon.</p>
+      </section>
+
+      <section id="resultPanel" class="panel hidden" aria-live="polite">
+        <img id="preview" alt="Last analyzed image" />
+
+        <div class="metric-row">
+          <span>AI Probability</span>
+          <strong id="aiProbability">-</strong>
+        </div>
+
+        <div class="metric-row">
+          <span>AI Status</span>
+          <span id="aiStatus" class="badge">-</span>
+        </div>
+
+        <div class="metric-row">
+          <span>Blockchain</span>
+          <strong id="verifyStatus">-</strong>
+        </div>
+
+        <div class="metric-row">
+          <span>Timestamp</span>
+          <strong id="timestamp">-</strong>
+        </div>
+
+        <button id="anchorBtn" type="button">Anchor Image</button>
+        <p id="statusMessage" class="status-message"></p>
+      </section>
     </main>
+
     <script src="popup.js"></script>
   </body>
 </html>

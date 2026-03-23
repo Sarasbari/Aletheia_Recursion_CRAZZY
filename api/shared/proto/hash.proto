@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package aletheia.hash.v1;
+
+service HashService {
+  rpc ComputeHashes (ComputeHashesRequest) returns (ComputeHashesResponse);
+}
+
+message ComputeHashesRequest {
+  bytes image = 1;
+}
+
+message ComputeHashesResponse {
+  string sha256 = 1;
+  string phash = 2;
+}

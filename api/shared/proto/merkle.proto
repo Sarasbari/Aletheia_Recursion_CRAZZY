@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package aletheia.merkle.v1;
+
+service MerkleService {
+  rpc ComputeMerkleRoot (ComputeMerkleRootRequest) returns (ComputeMerkleRootResponse);
+}
+
+message ComputeMerkleRootRequest {
+  bytes image = 1;
+}
+
+message ComputeMerkleRootResponse {
+  string merkle_root = 1;
+}

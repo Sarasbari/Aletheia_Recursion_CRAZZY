@@ -1,0 +1,138 @@
+:root {
+  --bg: #f4f7fb;
+  --card: #ffffff;
+  --text: #101828;
+  --muted: #667085;
+  --line: #e4e7ec;
+  --brand: #0f766e;
+  --brand-hover: #0b5f59;
+  --real-bg: #dcfce7;
+  --real-text: #166534;
+  --uncertain-bg: #fef3c7;
+  --uncertain-text: #92400e;
+  --ai-bg: #fee2e2;
+  --ai-text: #991b1b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: radial-gradient(circle at top right, #dbeafe, var(--bg) 48%);
+  color: var(--text);
+}
+
+.popup-root {
+  width: 340px;
+  min-height: 220px;
+  padding: 14px;
+}
+
+.popup-header h1 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.popup-header p {
+  margin: 4px 0 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  padding: 12px;
+}
+
+.panel-empty p {
+  margin: 0 0 8px;
+  font-size: 13px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.hidden {
+  display: none;
+}
+
+#preview {
+  width: 100%;
+  max-height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #eef2f6;
+  margin-bottom: 10px;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin: 7px 0;
+  font-size: 13px;
+}
+
+.metric-row span:first-child {
+  color: var(--muted);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge.real {
+  background: var(--real-bg);
+  color: var(--real-text);
+}
+
+.badge.uncertain {
+  background: var(--uncertain-bg);
+  color: var(--uncertain-text);
+}
+
+.badge.ai {
+  background: var(--ai-bg);
+  color: var(--ai-text);
+}
+
+#anchorBtn {
+  width: 100%;
+  margin-top: 10px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--brand);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px;
+  cursor: pointer;
+}
+
+#anchorBtn:hover {
+  background: var(--brand-hover);
+}
+
+#anchorBtn:disabled {
+  opacity: 0.75;
+  cursor: wait;
+}
+
+.status-message {
+  min-height: 16px;
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #334155;
+}
