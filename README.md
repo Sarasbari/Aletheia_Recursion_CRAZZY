@@ -1,4 +1,4 @@
-# 🌐 Aletheia Verifier — Browser Extension
+# 🌐 Aletheia Verifier
 
 > **Real-time Image Authenticity Verification on the Web**
 
