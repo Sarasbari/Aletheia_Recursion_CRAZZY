@@ -32,7 +32,7 @@
   --font-hand: 'Caveat', cursive;
   --radius: 10px;
   --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --max-width: 1140px;
+  --max-width: 1400px;
 }
 
 /* ---------- Light Theme ---------- */
@@ -1272,3 +1272,56 @@ body {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 }
 
+/* ---------- Desktop (1440px+) ---------- */
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1400px;
+    padding: 0 3rem;
+  }
+  .hero h1 {
+    font-size: clamp(2.6rem, 4.5vw, 3.8rem);
+  }
+  .hero-description {
+    font-size: 1.15rem;
+    max-width: 520px;
+  }
+  .hero-content {
+    gap: 4.5rem;
+  }
+  .section-title {
+    font-size: clamp(2rem, 3.8vw, 2.8rem);
+  }
+  .nav-links li:nth-child(1) { margin-right: 2rem; }
+  .nav-links li:nth-child(2) { margin-right: 2.5rem; }
+  .nav-links li:nth-child(3) { margin-right: 2rem; }
+  .nav-links li:nth-child(4) { margin-right: 2rem; }
+  .nav-links li:nth-child(5) { margin-right: 2.5rem; }
+  .nav-links li:nth-child(6) { margin-right: 2rem; }
+}
+
+/* ---------- Ultrawide (1920px+) ---------- */
+@media (min-width: 1920px) {
+  .container {
+    max-width: 1600px;
+    padding: 0 4rem;
+  }
+  .hero h1 {
+    font-size: 4rem;
+  }
+  .hero-description {
+    font-size: 1.2rem;
+    max-width: 560px;
+  }
+  .hero-content {
+    gap: 5rem;
+  }
+  section {
+    padding: 7rem 0;
+  }
+  .section-title {
+    font-size: 3rem;
+  }
+  .brand {
+    font-size: 1.35rem;
+  }
+}

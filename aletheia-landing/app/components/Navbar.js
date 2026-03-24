@@ -63,14 +63,19 @@ export default function Navbar() {
         </Link>
         <ul className={`nav-links${mobileOpen ? " open" : ""}`}>
           <li>
-            <a href="/#how-it-works" onClick={(e) => handleAnchorClick(e, "#how-it-works")}>
-              process
-            </a>
+            <Link href="/anchor" onClick={() => setMobileOpen(false)}>
+              anchor
+            </Link>
           </li>
           <li>
             <Link href="/verify" onClick={() => setMobileOpen(false)}>
               verify
             </Link>
+          </li>
+          <li>
+            <a href="/#how-it-works" onClick={(e) => handleAnchorClick(e, "#how-it-works")}>
+              process
+            </a>
           </li>
           <li>
             <a href="/#pricing" onClick={(e) => handleAnchorClick(e, "#pricing")}>
