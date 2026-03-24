@@ -1,0 +1,116 @@
+basePath: /api/v1
+definitions:
+  models.ImageProof:
+    properties:
+      ipfsCID:
+        type: string
+      merkleRoot:
+        type: string
+      phash:
+        type: string
+      proofId:
+        type: string
+      sha256:
+        type: string
+      status:
+        type: string
+      timestamp:
+        type: string
+      txHash:
+        type: string
+    type: object
+  models.VerificationResult:
+    properties:
+      matchedProofId:
+        type: string
+      similarityScore:
+        type: integer
+      trustScore:
+        type: integer
+      verdict:
+        description: AUTHENTIC, TAMPERED, SIMILAR, UNKNOWN
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: Decentralized Image Authenticity System API.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Aletheia API
+  version: "1.0"
+paths:
+  /images/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Accepts an image via multipart/form-data, generates SHA-256, pHash,
+        and Merkle Root, then stores metadata on IPFS, BigchainDB, and Polygon.
+      parameters:
+      - description: Image to upload
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ImageProof'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Upload an image and generate cryptographic proof
+      tags:
+      - images
+  /verify:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Recomputes hashes for the provided image and compares them with
+        stored data to determine authenticity and trust score.
+      parameters:
+      - description: Image to verify
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.VerificationResult'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Verify an image against existing proofs
+      tags:
+      - verification
+swagger: "2.0"
